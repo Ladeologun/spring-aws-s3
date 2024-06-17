@@ -1,0 +1,9 @@
+
+spring:
+  application:
+    name: aws-s3
+aws:
+  accessKeyId:
+  secretKey:
+  region: us-east-1
+  bucketName: ccpass-test-bucket

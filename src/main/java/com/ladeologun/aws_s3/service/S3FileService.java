@@ -3,6 +3,7 @@ package com.ladeologun.aws_s3.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Utilities;
@@ -41,6 +42,27 @@ public class S3FileService implements FileService{
         } catch (IOException e){
             throw new RuntimeException("unable to upload picture");
         }
+    }
+
+    @Override
+    public byte[] downloadFile(String key) {
+        try {
+            GetObjectRequest objectRequest = GetObjectRequest
+                    .builder()
+                    .key(key)
+                    .bucket(bucketName)
+                    .build();
+
+            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(objectRequest);
+            byte[] data = objectBytes.asByteArray();
+
+            return data;
+
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            throw new RuntimeException("unable to download picture");
+        }
+
     }
 
     @Override

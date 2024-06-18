@@ -1,6 +1,7 @@
 package com.ladeologun.aws_s3.controller;
 
 import com.ladeologun.aws_s3.service.S3FileService;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,21 @@ public class FileManagerController {
     ){
         Map<String, String> fileDetails = s3FileService.saveFile(file);
         return ResponseEntity.ok().body(fileDetails);
+    }
+
+    @GetMapping("/download/{fileKey}")
+    public ResponseEntity<ByteArrayResource> downloadFile (
+            @PathVariable("fileKey") String key
+    ){
+        byte[] bytes = s3FileService.downloadFile(key);
+        ByteArrayResource resource = new ByteArrayResource(bytes);
+
+        return ResponseEntity
+                .ok()
+                .contentLength(bytes.length)
+                .header("Content-type", "application/octet-stream")
+                .header("Content-disposition", "attachment; filename=\"" + key + "\"")
+                .body(resource);
     }
 
     @DeleteMapping("/{fileKey}")
